@@ -1,55 +1,56 @@
+# Проект: Гра Камінь-Папір-Ножиці
+# Опис: Це проста гра, де користувач грає проти комп'ютера у Камінь-Папір-Ножиці.
+# Гра перевіряє правильність введення і дозволяє грати кілька раундів.
+
 import random
 
-# Типи дій у грі
-ACTIONS: dict[int, str] = {0: "Камінь", 1: "Папір", 2: "Ножиці"}
-VICTORIES: dict[str, str] = {
-    "Камінь": "Ножиці",  # Камінь б'є ножиці
-    "Папір": "Камінь",  # Папір б'є камінь
-    "Ножиці": "Папір",  # Ножиці б'ють папір
-}
+
+# Функція для отримання вибору користувача
+def get_user_choice():
+    user_input = input("Введіть 'камінь', 'папір' або 'ножиці': ").lower()
+    # Перевірка правильності введення
+    while user_input not in ["камінь", "папір", "ножиці"]:
+        print("Невірний ввід! Виберіть 'камінь', 'папір' або 'ножиці'.")
+        user_input = input("Введіть 'камінь', 'папір' або 'ножиці': ").lower()
+    return user_input
 
 
-def get_user_selection(actions: dict[int, str]) -> str:
-    """Отримує вибір гравця та перевіряє коректність введення."""
-    while True:
-        try:
-            choices = [f"{actions[action]}[{action}]" for action in actions]
-            choices_str = ", ".join(choices)
-            selection = int(input(f"Виберіть дію ({choices_str}): "))
-            return actions[selection]
-        except (ValueError, KeyError):
-            print(
-                f"Некоректний вибір. Введіть номер із діапазону [0, {len(actions) - 1}]."
-            )
+# Функція для отримання вибору комп'ютера
+def get_computer_choice():
+    return random.choice(["камінь", "папір", "ножиці"])
 
 
-def get_computer_selection(actions: dict[int, str]) -> str:
-    """Вибір комп'ютера."""
-    return actions[random.randint(0, len(actions) - 1)]
-
-
-def determine_winner(
-    victories: dict[str, str], user_action: str, computer_action: str
-) -> str:
-    """Визначає переможця гри."""
-    if user_action == computer_action:
-        return f"Обидва вибрали {user_action}. Нічия!"
-    elif computer_action == victories[user_action]:
-        return f"{user_action} перемагає {computer_action}. Ви виграли!"
+# Функція для визначення переможця
+def determine_winner(user_choice, computer_choice):
+    if user_choice == computer_choice:
+        return "Нічия!"
+    elif (
+        (user_choice == "камінь" and computer_choice == "ножиці")
+        or (user_choice == "ножиці" and computer_choice == "папір")
+        or (user_choice == "папір" and computer_choice == "камінь")
+    ):
+        return "Ви виграли!"
     else:
-        return f"{computer_action} перемагає {user_action}. Ви програли!"
+        return "Переміг комп'ютер!"
 
 
-if __name__ == "__main__":
-    print("Ласкаво просимо до гри 'Камінь, ножиці, папір'!")
+# Основний цикл гри
+def play_game():
+    print("Ласкаво просимо в гру Камінь-Папір-Ножиці!")
     while True:
-        user_choice = get_user_selection(ACTIONS)
-        computer_choice = get_computer_selection(ACTIONS)
-        print(f"\nВаш вибір: {user_choice}, вибір комп'ютера: {computer_choice}.")
-        result = determine_winner(VICTORIES, user_choice, computer_choice)
+        user_choice = get_user_choice()
+        computer_choice = get_computer_choice()
+        print(f"Комп'ютер вибрав: {computer_choice}")
+        result = determine_winner(user_choice, computer_choice)
         print(result)
 
-        play_again = input("Грати ще раз? (y/n): ").strip().lower()
-        if play_again != "y":
-            print("Дякуємо за гру! До зустрічі!")
+        # Запитуємо користувача, чи хоче він грати ще
+        play_again = input("Хочете грати ще раз? (так/ні): ").lower()
+        if play_again != "так":
+            print("Дякуємо за гру!")
             break
+
+
+# Запуск гри
+if __name__ == "__main__":
+    play_game()
